@@ -5,7 +5,9 @@ $phone_details = '';
 if (isset($_POST['save'])) {
     if (!empty($_POST['search'])) {
         $search = $_POST['search'];
-        $stmt = $con->prepare("SELECT * FROM phone_info WHERE id LIKE '%$search%'");
+        $stmt = $con->prepare("SELECT * FROM phone_info WHERE id = ? OR phone_name LIKE ?");
+        $stmt->bindValue(1, $search); 
+        $stmt->bindValue(2, $search . '%'); 
         $stmt->execute();
         $phone_details = $stmt->fetchAll(PDO::FETCH_ASSOC);
     } else {
@@ -34,9 +36,9 @@ if (isset($_POST['save'])) {
     <form class="form-horizontal" action="#" method="post">
     <div class="row">
         <div class="form-group">
-            <label class="control-label col-sm-4" for="email"><b>Search phone by ID:</b>:</label>
+            <label class="control-label col-sm-4" for="email"><b>Search phone by ID or Model:</b>:</label>
             <div class="col-sm-4">
-              <input type="text" class="form-control" name="search" placeholder="ID">
+              <input type="text" class="form-control" name="search" placeholder="ID or Model">
             </div>
             <div class="col-sm-2">
               <button type="submit" name="save" class="btn btn-primary">Search</button>
@@ -92,7 +94,7 @@ if (isset($_POST['save'])) {
     </div>
 </div>
 
-<br><br><br><br><br><br><br><br><br><br><br>
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
 
 <form action="add_item.php" method="POST">
   <label for="id">ID:</label>
@@ -121,6 +123,50 @@ if (isset($_POST['save'])) {
   <input type="text" name="id" id="id">
   <input type="submit" value="Премахни телефон">
 </form>
+
+
+<br><br><br><br><br><br><br><br><br><br><br>
+
+<h1 class = "e_db" >Entire database</h1>
+
+<Style>
+  .e_db
+  {
+    text-align: center;
+  }
+</Style>
+
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Phone name</th>
+            <th>Price</th>
+            <th>Shape</th>
+            <th>Battery</th>
+            <th>Notes</th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php
+        include 'db_connect.php';
+        $stmt = $con->prepare("SELECT * FROM phone_info");
+        $stmt->execute();
+        $phone_details = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        foreach ($phone_details as $phone_info): ?>
+            <tr>
+                <td><?php echo $phone_info['id']; ?></td>
+                <td><?php echo $phone_info['phone_name']; ?></td>
+                <td><?php echo $phone_info['price']; ?></td>
+                <td><?php echo $phone_info['shape']; ?></td>
+                <td><?php echo $phone_info['battery']; ?></td>
+                <td><?php echo $phone_info['notes']; ?></td>
+            </tr>
+        <?php endforeach; ?>
+    </tbody>
+</table>
 
 <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
